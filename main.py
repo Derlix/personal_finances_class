@@ -22,7 +22,8 @@ def on_startup():
 @app.get("/")
 def read_root():
     return {
-        "Message": "hello world"
+        "Message": "ADSO 2670586",
+        "Autor": "Aricaz Christian "
     }
 
 ##pepepasds
