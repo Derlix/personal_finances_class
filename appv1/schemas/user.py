@@ -34,4 +34,4 @@ class UserLoggin(UserBase):
 
 class ResponseLoggin(BaseModel):
     user: UserLoggin
-    acces_token:str
+    access_token: str
