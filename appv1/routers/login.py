@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException,APIRouter
 from sqlalchemy.orm import Session
 from appv1.crud.user import get_user_by_id,get_user_by_email
+from appv1.crud.permissions import get_all_permissions
 from appv1.schemas.user import ResponseLoggin,UserLoggin
 from core.security import verify_password,create_access_token,verify_token
 from db.database import get_db
@@ -69,6 +70,8 @@ db:Session = Depends(get_db)):
         data={"sub": user.user_id,"rol":user.user_role}
     )
     
+    permisos = get_all_permissions(db,user.user_role)
+
     return ResponseLoggin(
         user=UserLoggin(
             user_id=user.user_id,
@@ -76,6 +79,7 @@ db:Session = Depends(get_db)):
             mail=user.mail,
             user_role=user.user_role
         ),
+        permissions=permisos,
         access_token=access_token
     )
 
