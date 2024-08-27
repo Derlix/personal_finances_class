@@ -8,18 +8,19 @@
 </head>
 <body>
     <div class="container">
+        <h2 class="mt-5">Usuarios</h2>
         <div class="row">
-            <div class="col-6">
+            <div class="col-12">
                 <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>Nombre Completo</th>
                             <th>Correo</th>
-                            <th>acciones</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="datos">
-
+                        <!-- Aquí se insertarán las filas de la tabla -->
                     </tbody>
                 </table>
             </div>
@@ -27,35 +28,41 @@
     </div>
 
     <script>
-        // Obtener el token de localStorage
         const token = localStorage.getItem('token');
 
         if (!token) {
-            // Si no hay token, redirigir al login
             window.location.href = 'index.html';
         } else {
-            // Consumir el endpoint de usuarios
-            fetch('http://127.0.0.1:8000/users/get-all/', {
+            fetch('https://personal-finances-class.onrender.com/users/get_all/', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + token,
                     'accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
                 const usertbody = document.getElementById('datos');
                 data.forEach(user => {
                     const fila = document.createElement('tr');
+
                     const nombre = document.createElement('td');
-                    const correo = document.createElement('td');
-                    const botones = document.createElement('td');
-                    const boton = document.createElement('button');
-                    boton.textContent = "Editar";
-                    boton.className = "btn btn-primary";
-                    botones.appendChild(boton);
                     nombre.textContent = user.full_name;
+
+                    const correo = document.createElement('td');
                     correo.textContent = user.mail;
+
+                    const botones = document.createElement('td');
+                    const botonEditar = document.createElement('button');
+                    botonEditar.textContent = 'Editar';
+                    botonEditar.className = 'btn btn-primary';
+
+                    botones.appendChild(botonEditar);
                     fila.appendChild(nombre);
                     fila.appendChild(correo);
                     fila.appendChild(botones);

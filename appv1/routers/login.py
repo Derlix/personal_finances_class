@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException,APIRouter
 from sqlalchemy.orm import Session
 from appv1.crud.user import get_user_by_id,get_user_by_email
-from appv1.schemas.user import UserResponse
+from appv1.schemas.user import ResponseLoggin,UserLoggin
 from core.security import verify_password,create_access_token,verify_token
 from db.database import get_db
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -14,7 +14,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/access/token")
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
-    
     ):
         user = await verify_token(token)
         if user is None:
@@ -52,10 +51,11 @@ def authenticate_user(username: str, password: str,db:Session):
 #     return {"token":token}
 
 
-@router.post("/token")
+@router.post("/token", response_model=ResponseLoggin)
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db:Session = Depends(get_db)):
+db:Session = Depends(get_db)):
+
 
     user = authenticate_user(form_data.username, form_data.password,db)
     if not user:
@@ -64,8 +64,18 @@ async def login_for_access_token(
             detail="Datos incoorectos en email o password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
     access_token = create_access_token(
         data={"sub": user.user_id,"rol":user.user_role}
     )
-    return {"access_token":access_token, "token_type":"bearer"}
+    
+    return ResponseLoggin(
+        user=UserLoggin(
+            user_id=user.user_id,
+            full_name=user.full_name,
+            mail=user.mail,
+            user_role=user.user_role
+        ),
+        access_token=access_token
+    )
 

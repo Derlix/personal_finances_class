@@ -6,9 +6,10 @@ class UserBase(BaseModel):
     full_name: Annotated[str, StringConstraints(max_length=80)]
     mail: EmailStr
     user_role: Annotated[str, StringConstraints(max_length=15)]
-
+    
 class UserCreate(UserBase):
     passhash: Annotated[str, StringConstraints(max_length=30)]
+
     
 class UserResponse(UserBase):
     user_id: str
@@ -27,3 +28,10 @@ class PaginatedUsersResponse(BaseModel):
     total_pages: int
     current_page: int
     page_size: int
+
+class UserLoggin(UserBase):
+    user_id: str
+
+class ResponseLoggin(BaseModel):
+    user: UserLoggin
+    acces_token:str
