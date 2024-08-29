@@ -1,4 +1,4 @@
-from appv1.routers import user,rol,login
+from appv1.routers import rol,user,login
 from fastapi import FastAPI
 from db.database import test_db_connection
 
